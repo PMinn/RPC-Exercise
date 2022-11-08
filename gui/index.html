@@ -1,0 +1,61 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>討論區</title>
+    <script type="text/javascript" src="/eel.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #left {
+            width: 300px;
+            height: 100vh;
+            padding: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="left">
+        <div class="list-group"></div>
+    </div>
+    <script>
+        // eel.expose(connectEnd);
+        // function connectEnd() {
+        //     connectingBtn.disabled = false;
+        // }
+        const listGroup = document.querySelector('#left>.list-group');
+
+        eel.subject()()
+            .then(subjects => {
+                console.log(subjects)
+                JSON.parse(subjects).forEach(subject => {
+                    var button = document.createElement('button');
+                    button.type = "button";
+                    button.classList.add('list-group-item');
+                    button.classList.add('list-group-item-action');
+                    button.classList.add('d-flex');
+                    button.classList.add('justify-content-between');
+                    button.classList.add('align-items-start');
+                    button.innerHTML = `
+                        <div class="fw-bold">${subject.topic}</div>
+                        <span class="badge bg-primary rounded-pill">${subject.numOfReply}</span>
+                    `;
+                    listGroup.appendChild(button);
+                })
+            })
+            .catch(error => {
+                alert(error.errorText)
+            })
+    </script>
+</body>
+
+</html>

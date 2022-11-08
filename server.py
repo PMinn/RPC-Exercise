@@ -1,9 +1,5 @@
 ####################################################
-#  Network Programming - Unit 6 Remote Procedure Call          
-#  Program Name: 8-RESTServer.py                                      			
-#  This program is a simple REST API server.           		
-#  Install Flask: pip3 install flask
-#  2021.08.14                                             									
+#  D1014636 潘子珉                                      									
 ####################################################
 from flask import Flask, json, request, jsonify
 
@@ -68,7 +64,11 @@ def create():
 def subject():
     topics = []
     for post in POSTS:
-        topics.append(post['topic'])
+        topics.append({
+            'topic':post['topic'],
+            'id':post['id'],
+            'numOfReply':len(post['reply'])
+        })
     return jsonify(topics)
 
 
@@ -156,11 +156,11 @@ def update_companies():
 '''
 
 
-with open(USER_FILE) as fp:
+with open(USER_FILE, encoding='utf-8') as fp:
 	USERS = json.load(fp)
 print(USERS)
 
-with open(POST_FILE) as fp:
+with open(POST_FILE, encoding='utf-8') as fp:
 	POSTS = json.load(fp)
 print(POSTS)
 	

@@ -1,43 +1,45 @@
 ####################################################
-#  Network Programming - Unit 7 Remote Procedure Call          
-#  Program Name: 7-RESTClient.py                                      			
-#  This program is a simple REST API client.           		
-# Install requests: pip3 install requests
-#  2021.08.14                                             									
+#  D1014636 潘子珉                                      									
 ####################################################
 import sys
 import requests
 import json
+import eel
+
+eel.init('gui', allowed_extensions=['.js', '.html'])
 
 PORT = 5050
 hostname = '127.0.0.1'
-
 URI = f'http://{hostname}:{PORT}'
+
 def register():
-    new_dict = {"username":"789"}
-    response = requests.post(URI+'/register', json=new_dict)
-    print(response.status_code)
-    print(response.headers)
-    print(response.text)
+	new_dict = {"username":"789"}
+	response = requests.post(URI+'/register', json=new_dict)
+	print(response.status_code)
+	print(response.headers)
+	print(response.text)
 
 def create():
-    new_dict = {"owneUsername":"789","topic":"1tit","content":"con"}
-    response = requests.post(URI+'/create', json=new_dict)
-    print(response.status_code)
-    print(response.headers)
-    print(response.text)
+	new_dict = {"owneUsername":"789","topic":"1tit","content":"con"}
+	response = requests.post(URI+'/create', json=new_dict)
+	print(response.status_code)
+	print(response.headers)
+	print(response.text)
 
+@eel.expose
 def subject():
-    response = requests.post(URI+'/subject')
-    print(response.status_code)
-    print(response.headers)
-    print(response.text)
-    
-new_dict = {"owneUsername":"789","content":"con"}
-response = requests.post(URI+'/reply', params = {"postId":1},json=new_dict)
-print(response.status_code)
-print(response.headers)
-print(response.text)
+	response = requests.post(URI+'/subject')
+	print(response.status_code)
+	print(response.headers)
+	print(response.text)
+	return response.text
+
+def reply():
+	new_dict = {"owneUsername":"789","content":"con"}
+	response = requests.post(URI+'/reply', params = {"postId":1},json=new_dict)
+	print(response.status_code)
+	print(response.headers)
+	print(response.text)
 
 '''
 	if(sys.argv[3] == 'all'):
@@ -83,3 +85,4 @@ print(response.text)
 	else:
 		print("Usage: python3 7-RESTClient.py serverIP port cmd (cmd = all, add, update, query) ")
 '''
+eel.start('index.html', size=(1000, 1000), port=0)
