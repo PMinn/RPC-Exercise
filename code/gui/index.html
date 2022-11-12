@@ -1,0 +1,255 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>討論區</title>
+    <script type="text/javascript" src="/eel.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <link rel="stylesheet" href="./bootstrap/bootstrap.css">
+
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        .page {
+            display: flex;
+            justify-content: center;
+            background-color: #223843;
+            height: calc(100vh - 48px);
+        }
+
+        nav {
+            background-color: #0b58ad;
+            width: 100vw;
+            height: 48px;
+            display: flex;
+            flex-direction: row-reverse;
+            align-items: center;
+            padding: 0 20px;
+        }
+
+        #loginedUsername {
+            margin: 0;
+            color: #fff;
+        }
+
+        #left {
+            width: 300px;
+            height: 100%;
+            position: relative;
+        }
+
+        #right {
+            width: 728px;
+            height: 100%;
+            background-color: #eff1f3;
+        }
+
+        iframe {
+            height: 100%;
+            width: 100%;
+        }
+
+        .btn-outer {
+            width: 100%;
+            position: absolute;
+            bottom: 3vh;
+            left: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .fixed-page {
+            position: fixed;
+            top: 0;
+            left: 0;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            background-color: #000000aa;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .fixed-page iframe {
+            border-radius: 0.3rem;
+            width: 728px;
+            height: 80vh;
+            margin: 10vh calc(50vw - 300px);
+            box-shadow: 5px 5px 20px #00000080;
+        }
+
+        .fixed-page-btn-outer {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+        #create_btn {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <button type="button" class="btn btn-primary" onclick="open_fixedPage('#registerDiv')"
+            id="register_btn">註冊</button>
+        <h3 id="loginedUsername"></h3>
+    </nav>
+    <div class="page">
+        <div id="left">
+            <div class="list-group list-group-theme list-group-flush">
+                <!-- <button
+                    class="list-group-item list-group-item-theme list-group-item-action d-flex justify-content-between align-items-start">
+                    <div class="fw-bold">討論1</div>
+                    <span class="badge rounded-pill">1</span>
+                </button>
+                <button
+                    class="list-group-item list-group-item-theme list-group-item-action d-flex justify-content-between align-items-start">
+                    <div class="fw-bold">討論2</div>
+                    <span class="badge rounded-pill">1</span>
+                </button> -->
+            </div>
+            <div class="btn-outer">
+                <button type="button" class="btn btn-primary" onclick="open_fixedPage('#createDiv')"
+                    id="create_btn">新增討論主題</button>
+            </div>
+        </div>
+        <div id="right">
+            <iframe frameborder="0" id="postFrame"></iframe>
+        </div>
+        <div id="createDiv" class="fixed-page">
+            <iframe src="./create.html" frameborder="0" id="createFrame"></iframe>
+            <div class="fixed-page-btn-outer">
+                <button type="button" class="btn btn-primary" onclick="create()">送出</button>
+                <button type="button" class="btn btn-secondary"
+                    onclick="close_fixedPage('#createDiv');createFrameClear();">取消</button>
+            </div>
+        </div>
+        <div id="registerDiv" class="fixed-page">
+            <iframe src="./register.html" frameborder="0" id="registerFrame"></iframe>
+            <div class="fixed-page-btn-outer">
+                <button type="button" class="btn btn-secondary" onclick="close_fixedPage('#registerDiv')">取消</button>
+            </div>
+        </div>
+    </div>
+    <script>
+        const listGroup = document.querySelector('#left>div');
+        const createDiv = document.getElementById('createDiv');
+        const createFrame = document.getElementById('createFrame');
+        const registerFrame = document.getElementById('registerFrame');
+        const postFrame = document.getElementById('postFrame');
+
+        var isLogin = false;
+        var loginedUsername = "";
+
+        var subjects = [];
+
+        function left_init() {
+            listGroup.innerHTML = '';
+        }
+
+        function getSubjects() {
+            return eel.subject()()
+                .then(s => {
+                    subjects = JSON.parse(s)
+                })
+        }
+
+        function render_subject() {
+            subjects.forEach(subject => {
+                var button = document.createElement('button');
+                button.type = "button";
+                button.classList.add('list-group-item');
+                button.classList.add('list-group-item-action');
+                button.classList.add('d-flex');
+                button.classList.add('justify-content-between');
+                button.classList.add('align-items-start');
+                button.innerHTML = `
+                        <div class="fw-bold">${subject.topic.map(t => t.data.text).join('')}</div>
+                        <span class="badge rounded-pill">${subject.numOfReply}</span>
+                    `;
+                listGroup.appendChild(button);
+            })
+        }
+
+        function post_init() {
+            postFrame.src = `./post.html?id=${subjects[0].id}`;
+        }
+
+        function createFrameClear() {
+            createFrame.contentWindow.clear();
+        }
+
+        function create() {
+            createFrame.contentWindow.save()
+                .then(savedata => {
+                    if (savedata[0].blocks.length > 0 && savedata[0].blocks.length > 0) {
+                        console.log(savedata);//savedata[i].blocks
+                        eel.create({
+                            "owneUsername": "789",
+                            "topic": savedata[0].blocks,
+                            "content": savedata[1].blocks
+                        })()
+                            .then(() => {
+                                left_init();
+                                getSubjects()
+                                    .then(() => {
+                                        render_subject();
+                                    })
+                            })
+                    }
+                    close_fixedPage('#createDiv');
+                });
+        }
+
+        function open_fixedPage(query) {
+            var targetDOM = document.querySelector(query);
+            targetDOM.style.display = "block";
+            setTimeout(() => {
+                targetDOM.style.opacity = "1";
+            }, 100)
+        }
+
+        function close_fixedPage(query) {
+            var targetDOM = document.querySelector(query);
+            targetDOM.style.opacity = "0";
+            setTimeout(() => {
+                targetDOM.style.display = "none";
+            }, 300)
+        }
+
+        function register(username) {
+            eel.register(username)()
+                .then(response => {
+                    if (response.code >= 200 && response.code <= 299) {
+                        isLogin = true;
+                        loginedUsername = username;
+                        document.getElementById("loginedUsername").innerText = username;
+                        close_fixedPage('#registerDiv');
+                        document.getElementById("register_btn").remove();
+                        document.getElementById('create_btn').style.display = 'block';
+                    } else return Promise.reject(JSON.parse(response.text).error);
+                })
+                .catch(error => {
+                    console.error(error)
+                    alert(error)
+                })
+        }
+
+        getSubjects()
+            .then(() => {
+                render_subject();
+                post_init();
+            })
+    </script>
+</body>
+
+</html>

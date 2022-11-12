@@ -5,6 +5,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <script type="text/javascript" src="/eel.js"></script>
+
     <script src="https://cdn.jsdelivr.net/npm/@editorjs/editorjs@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@editorjs/header@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@editorjs/list@latest"></script>
@@ -77,55 +79,61 @@
         </div>
     </div>
     <script>
-        const title = document.getElementById("title");
-        const EDITOR_JS_TOOLS = {
-            embed: Embed,
-            table: Table,
-            marker: Marker,
-            list: List,
-            warning: Warning,
-            code: CodeTool,
-            image: SimpleImage,
-            raw: RawTool,
-            header: Header,
-            checklist: Checklist,
-            delimiter: Delimiter,
-            inlineCode: InlineCode,
-            underline: Underline
-        };
+        if (location.search.startsWith('?id=')) {
+            const id = parseInt(location.search.replace("?id=", ""));
 
-        var editorTitle = new EditorJS({
-            holder: "title",
-            tools: {
-                header: Header
-            },
-            minHeight: 30,
-            defaultBlock: 'header',
-            placeholder: '標題',
-            readOnly: true,
-            data: { "time": 1668168650071, "blocks": [{ "id": "uO7RX52NhV", "type": "header", "data": { "text": "討論1", "level": 2 } }], "version": "2.25.0" }
-        });
+            console.log(`now page id is ${id}`);
+
+            const title = document.getElementById("title");
+            const EDITOR_JS_TOOLS = {
+                embed: Embed,
+                table: Table,
+                marker: Marker,
+                list: List,
+                warning: Warning,
+                code: CodeTool,
+                image: SimpleImage,
+                raw: RawTool,
+                header: Header,
+                checklist: Checklist,
+                delimiter: Delimiter,
+                inlineCode: InlineCode,
+                underline: Underline
+            };
+
+            var editorTitle = new EditorJS({
+                holder: "title",
+                tools: {
+                    header: Header
+                },
+                minHeight: 30,
+                defaultBlock: 'header',
+                placeholder: '標題',
+                readOnly: true,
+                data: { "time": 1668168650071, "blocks": [{ "id": "uO7RX52NhV", "type": "header", "data": { "text": "討論1", "level": 2 } }], "version": "2.25.0" }
+            });
 
 
-        var editorBody = new EditorJS({
-            holder: "content",
-            tools: EDITOR_JS_TOOLS,
-            i18n: i18n,
-            placeholder: 'Let`s write an awesome story!',
-            onReady: () => {
-                new DragDrop(editorBody);
-            }
-        });
+            var editorBody = new EditorJS({
+                holder: "content",
+                tools: EDITOR_JS_TOOLS,
+                i18n: i18n,
+                placeholder: 'Let`s write an awesome story!',
+                onReady: () => {
+                    new DragDrop(editorBody);
+                }
+            });
 
-        var editorEditor = new EditorJS({
-            holder: "editor",
-            tools: EDITOR_JS_TOOLS,
-            i18n: i18n,
-            placeholder: '新增回覆內容',
-            onReady: () => {
-                new DragDrop(editorEditor);
-            }
-        });
+            var editorEditor = new EditorJS({
+                holder: "editor",
+                tools: EDITOR_JS_TOOLS,
+                i18n: i18n,
+                placeholder: '新增回覆內容',
+                onReady: () => {
+                    new DragDrop(editorEditor);
+                }
+            });
+        }
     </script>
 </body>
 

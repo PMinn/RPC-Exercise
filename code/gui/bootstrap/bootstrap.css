@@ -11,12 +11,3 @@
 .list-group-item.list-group-item-theme:hover {
     --bs-list-group-bg: hsl(200, 33%, 12%);
 }
-
-/* .btn.btn-theme {
-    --bs-btn-bg: #2685ef;
-    --bs-btn-hover-bg: #1a71d2;
-    --bs-btn-color: #fff;
-    --bs-btn-hover-color: #fff;
-    --bs-btn-active-bg:#1a71d2;
-    --bs-btn-active-color:#fff;
-} */

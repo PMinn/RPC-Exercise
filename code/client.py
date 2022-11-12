@@ -12,16 +12,20 @@ PORT = 5050
 hostname = '127.0.0.1'
 URI = f'http://{hostname}:{PORT}'
 
-def register():
-	new_dict = {"username":"789"}
-	response = requests.post(URI+'/register', json=new_dict)
-	print(response.status_code)
-	print(response.headers)
-	print(response.text)
+isLogin = False
+loginedUsername = ""
 
-def create():
-	new_dict = {"owneUsername":"789","topic":"1tit","content":"con"}
-	response = requests.post(URI+'/create', json=new_dict)
+@eel.expose
+def register(username):
+	response = requests.post(URI+'/register', json={"username":username})
+	if response.status_code//100 == 2:
+		isLogin = True
+		loginedUsername = username
+	return {"code":response.status_code,"text":response.text}
+
+@eel.expose
+def create(data):
+	response = requests.post(URI+'/create', json=data)
 	print(response.status_code)
 	print(response.headers)
 	print(response.text)
@@ -30,7 +34,7 @@ def create():
 def subject():
 	response = requests.post(URI+'/subject')
 	print(response.status_code)
-	print(response.headers)
+	# print(response.headers)
 	print(response.text)
 	return response.text
 
@@ -40,6 +44,9 @@ def reply():
 	print(response.status_code)
 	print(response.headers)
 	print(response.text)
+
+def discussion():
+	pass
 
 '''
 	if(sys.argv[3] == 'all'):
