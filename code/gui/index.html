@@ -10,95 +10,12 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
     <link rel="stylesheet" href="./bootstrap/bootstrap.css">
 
-    <style>
-        html,
-        body {
-            margin: 0;
-            padding: 0;
-        }
-
-        .page {
-            display: flex;
-            justify-content: center;
-            background-color: #223843;
-            height: calc(100vh - 48px);
-        }
-
-        nav {
-            background-color: #0b58ad;
-            width: 100vw;
-            height: 48px;
-            display: flex;
-            flex-direction: row-reverse;
-            align-items: center;
-            padding: 0 20px;
-        }
-
-        #loginedUsername {
-            margin: 0;
-            color: #fff;
-        }
-
-        #left {
-            width: 300px;
-            height: 100%;
-            position: relative;
-        }
-
-        #right {
-            width: 728px;
-            height: 100%;
-            background-color: #eff1f3;
-        }
-
-        iframe {
-            height: 100%;
-            width: 100%;
-        }
-
-        .btn-outer {
-            width: 100%;
-            position: absolute;
-            bottom: 3vh;
-            left: 0;
-            display: flex;
-            justify-content: center;
-        }
-
-        .fixed-page {
-            position: fixed;
-            top: 0;
-            left: 0;
-            display: none;
-            opacity: 0;
-            transition: opacity 0.2s;
-            background-color: #000000aa;
-            width: 100vw;
-            height: 100vh;
-        }
-
-        .fixed-page iframe {
-            border-radius: 0.3rem;
-            width: 728px;
-            height: 80vh;
-            margin: 10vh calc(50vw - 300px);
-            box-shadow: 5px 5px 20px #00000080;
-        }
-
-        .fixed-page-btn-outer {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-        }
-
-        #create_btn {
-            display: none;
-        }
-    </style>
+    <link rel="stylesheet" href="./css/index.css">
 </head>
 
 <body>
     <nav>
+        <button type="button" class="btn btn-secondary" onclick="open_fixedPage('#loginDiv')" id="login_btn">登入</button>
         <button type="button" class="btn btn-primary" onclick="open_fixedPage('#registerDiv')"
             id="register_btn">註冊</button>
         <h3 id="loginedUsername"></h3>
@@ -137,6 +54,12 @@
             <iframe src="./register.html" frameborder="0" id="registerFrame"></iframe>
             <div class="fixed-page-btn-outer">
                 <button type="button" class="btn btn-secondary" onclick="close_fixedPage('#registerDiv')">取消</button>
+            </div>
+        </div>
+        <div id="loginDiv" class="fixed-page">
+            <iframe src="./login.html" frameborder="0" id="loginFrame"></iframe>
+            <div class="fixed-page-btn-outer">
+                <button type="button" class="btn btn-secondary" onclick="close_fixedPage('#loginDiv')">取消</button>
             </div>
         </div>
     </div>
@@ -235,6 +158,27 @@
                         document.getElementById("loginedUsername").innerText = username;
                         close_fixedPage('#registerDiv');
                         document.getElementById("register_btn").remove();
+                        document.getElementById("login_btn").remove();
+                        document.getElementById('create_btn').style.display = 'block';
+                    } else return Promise.reject(JSON.parse(response.text).error);
+                })
+                .catch(error => {
+                    console.error(error)
+                    alert(error)
+                })
+        }
+
+        function login(username) {
+            eel.login(username)()
+                .then(response => {
+                    if (response.code >= 200 && response.code <= 299) {
+                        // console.log(JSON.parse(response.text))
+                        isLogin = true;
+                        loginedUsername = username;
+                        document.getElementById("loginedUsername").innerText = username;
+                        close_fixedPage('#loginDiv');
+                        document.getElementById("register_btn").remove();
+                        document.getElementById("login_btn").remove();
                         document.getElementById('create_btn').style.display = 'block';
                     } else return Promise.reject(JSON.parse(response.text).error);
                 })
@@ -248,6 +192,19 @@
             .then(() => {
                 render_subject();
                 post_init();
+            })
+
+        eel.getLoginState()()
+            .then(response => {
+                console.log(response)
+                if (response.isLogin) {
+                    isLogin = true;
+                    loginedUsername = response.loginedUsername;
+                    document.getElementById("loginedUsername").innerText = loginedUsername;
+                    document.getElementById("register_btn").remove();
+                    document.getElementById("login_btn").remove();
+                    document.getElementById('create_btn').style.display = 'block';
+                }
             })
     </script>
 </body>

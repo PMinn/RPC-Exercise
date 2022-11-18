@@ -1,3 +1,5 @@
 @echo off
 
-python server.py
+cd ./code
+python ./server.py
+pause

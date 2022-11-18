@@ -41,7 +41,8 @@
             cursor: text;
         }
 
-        .main {
+        .main,
+        #reply>div {
             padding: 30px;
         }
 
@@ -51,9 +52,12 @@
             margin: 0 auto;
             padding: 20px;
             border-radius: 0.375rem;
+            display: none;
         }
 
-        #editor .codex-editor__redactor {
+        #editor .codex-editor__redactor,
+        .main .codex-editor__redactor,
+        #reply .codex-editor__redactor {
             padding-bottom: 5px !important;
         }
 
@@ -61,6 +65,22 @@
             margin-top: 20px;
             display: flex;
             justify-content: flex-end;
+        }
+
+        #reply {
+            background-color: #0b59ad18;
+        }
+
+        .username {
+            font-weight: 900;
+        }
+
+        #reply hr {
+            margin-top: 0;
+        }
+
+        hr {
+            margin-bottom: 0;
         }
     </style>
     </style>
@@ -70,69 +90,109 @@
     <div class="main">
         <div id="title"></div>
         <div id="content"></div>
-        <hr>
     </div>
+    <hr>
+    <div id="reply"></div>
+
     <div class="editor-group">
         <div id="editor"></div>
         <div class="create-outer">
-            <button type="button" id="create" class="btn btn-primary">送出</button>
+            <button type="button" id="create_btn" class="btn btn-primary">送出</button>
         </div>
     </div>
     <script>
+        const title = document.getElementById("title");
+        const replyDOM = document.getElementById("reply");
+        const create_btn = document.getElementById("create_btn");
+
         if (location.search.startsWith('?id=')) {
             const id = parseInt(location.search.replace("?id=", ""));
 
             console.log(`now page id is ${id}`);
 
-            const title = document.getElementById("title");
-            const EDITOR_JS_TOOLS = {
-                embed: Embed,
-                table: Table,
-                marker: Marker,
-                list: List,
-                warning: Warning,
-                code: CodeTool,
-                image: SimpleImage,
-                raw: RawTool,
-                header: Header,
-                checklist: Checklist,
-                delimiter: Delimiter,
-                inlineCode: InlineCode,
-                underline: Underline
-            };
+            eel.discussion(id)()
+                .then(response => {
+                    response = JSON.parse(response.text);
+                    console.log(response);
 
-            var editorTitle = new EditorJS({
-                holder: "title",
-                tools: {
-                    header: Header
-                },
-                minHeight: 30,
-                defaultBlock: 'header',
-                placeholder: '標題',
-                readOnly: true,
-                data: { "time": 1668168650071, "blocks": [{ "id": "uO7RX52NhV", "type": "header", "data": { "text": "討論1", "level": 2 } }], "version": "2.25.0" }
-            });
+                    const EDITOR_JS_TOOLS = {
+                        embed: Embed,
+                        table: Table,
+                        marker: Marker,
+                        list: List,
+                        warning: Warning,
+                        code: CodeTool,
+                        image: SimpleImage,
+                        raw: RawTool,
+                        header: Header,
+                        checklist: Checklist,
+                        delimiter: Delimiter,
+                        inlineCode: InlineCode,
+                        underline: Underline
+                    };
+
+                    var editorTitle = new EditorJS({
+                        holder: "title",
+                        tools: {
+                            header: Header
+                        },
+                        minHeight: 30,
+                        defaultBlock: 'header',
+                        placeholder: '標題',
+                        readOnly: true,
+                        data: { "blocks": response.topic }
+                    });
 
 
-            var editorBody = new EditorJS({
-                holder: "content",
-                tools: EDITOR_JS_TOOLS,
-                i18n: i18n,
-                placeholder: 'Let`s write an awesome story!',
-                onReady: () => {
-                    new DragDrop(editorBody);
-                }
-            });
+                    var editorBody = new EditorJS({
+                        holder: "content",
+                        tools: EDITOR_JS_TOOLS,
+                        readOnly: true,
+                        data: { "blocks": response.content }
+                    });
 
-            var editorEditor = new EditorJS({
-                holder: "editor",
-                tools: EDITOR_JS_TOOLS,
-                i18n: i18n,
-                placeholder: '新增回覆內容',
-                onReady: () => {
-                    new DragDrop(editorEditor);
-                }
-            });
+                    response.reply.forEach(reply => {
+                        console.log(reply)
+
+                        var outer = document.createElement("div");
+                        var name = document.createElement("div");
+                        var hr = document.createElement("hr");
+                        name.classList.add("username");
+                        name.innerText = reply.owneUsername + ':';
+                        var inner = document.createElement("div");
+                        inner.id = `reply_${reply.id}`;
+                        outer.appendChild(name);
+                        outer.appendChild(inner);
+                        outer.appendChild(hr);
+                        replyDOM.appendChild(outer);
+                        new EditorJS({
+                            holder: `reply_${reply.id}`,
+                            tools: EDITOR_JS_TOOLS,
+                            readOnly: true,
+                            data: { "blocks": reply.content }
+                        });
+                    });
+
+
+                    if (window.parent.isLogin) {
+                        document.querySelector(".editor-group ").style.display = "block";
+                        var editorEditor = new EditorJS({
+                            holder: "editor",
+                            tools: EDITOR_JS_TOOLS,
+                            i18n: i18n,
+                            placeholder: '新增回覆內容',
+                            onReady: () => {
+                                new DragDrop(editorEditor);
+                            }
+                        });
+                    }
+                    create_btn.addEventListener('click', () => {
+                        editorEditor.save()
+                            .then(savedata => {
+                                eel.reply(id, savedata.blocks);
+                            })
+                    })
+                })
         }
     </script>
 </body>

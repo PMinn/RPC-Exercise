@@ -17,8 +17,24 @@ loginedUsername = ""
 
 @eel.expose
 def register(username):
+	global isLogin
+	global loginedUsername
 	response = requests.post(URI+'/register', json={"username":username})
-	if response.status_code//100 == 2:
+	print(response.status_code)
+	print(response.status_code == 201)
+	if response.status_code == 201:
+		isLogin = True
+		loginedUsername = username
+	return {"code":response.status_code,"text":response.text}
+
+@eel.expose
+def login(username):
+	global isLogin
+	global loginedUsername
+	response = requests.post(URI+'/login', json={"username":username})
+	print(response.status_code)
+	print(response.status_code == 201)
+	if response.status_code == 201:
 		isLogin = True
 		loginedUsername = username
 	return {"code":response.status_code,"text":response.text}
@@ -38,15 +54,35 @@ def subject():
 	print(response.text)
 	return response.text
 
-def reply():
-	new_dict = {"owneUsername":"789","content":"con"}
-	response = requests.post(URI+'/reply', params = {"postId":1},json=new_dict)
-	print(response.status_code)
-	print(response.headers)
-	print(response.text)
+@eel.expose
+def reply(postId, content):
+    print(loginedUsername)
+    new_dict = {"owneUsername":loginedUsername,"content":content}
+    response = requests.post(URI+'/reply', params = {"postId":postId},json=new_dict)
+    print(response.status_code)
+    print(response.headers)
+    print(response.text)
+    return {"code":response.status_code,"text":response.text}
 
-def discussion():
-	pass
+@eel.expose
+def discussion(postId):
+    response = requests.get(URI+'/discussion', params = {"postId":postId})
+    print(response.status_code)
+    print(response.headers)
+    print(response.text)
+    return {"code":response.status_code,"text":response.text}
+
+@eel.expose
+def delete(json):
+    response = requests.delete(URI+'/delete', json = json)
+    print(response.status_code)
+    print(response.headers)
+    print(response.text)
+    return {"code":response.status_code,"text":response.text}
+
+@eel.expose
+def getLoginState():
+    return {"isLogin":isLogin,"loginedUsername":loginedUsername}
 
 '''
 	if(sys.argv[3] == 'all'):

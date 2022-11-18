@@ -1,3 +1,5 @@
 @echo off
 
-python client.py
+cd ./code
+python ./client.py
+pause

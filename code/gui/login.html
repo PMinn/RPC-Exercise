@@ -29,7 +29,7 @@
 
 <body>
     <div class="form">
-        <h1>註冊</h1>
+        <h1>登入</h1>
         <div class="form-group">
             <label for="usernameInput">使用者名稱</label>
             <input type="text" class="form-control" id="usernameInput" placeholder="輸入使用者名稱" require>
@@ -39,7 +39,7 @@
     <script>
         document.getElementById("sub_btn").addEventListener("click", () => {
             var username = document.querySelector("#usernameInput").value;
-            window.parent.register(username)
+            window.parent.login(username)
         });
     </script>
 </body>

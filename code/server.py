@@ -26,8 +26,14 @@ def find_next_reply_id(postId):
 def isUsernameAlreadyExist(username):
     for user in USERS:
         if user['username'] == username:
-            return True
-    return False
+            return (True, user)
+    return (False, None)
+
+def find_topic_by_id(postId):
+    for post in POSTS:
+        if post['id'] == postId:
+            return post
+    return None
 
 @API.route("/register", methods=['POST'])
 def register():
@@ -35,12 +41,25 @@ def register():
         newUser = request.get_json()
         if newUser['username'] == None:
             return {"error": "username not found"}, 400
-        if isUsernameAlreadyExist(newUser['username']):
+        if isUsernameAlreadyExist(newUser['username'])[0]:
             return {"error": "username already exists"}, 400
         USERS.append(newUser)
         with open(USER_FILE, 'w') as wfp:
-        	json.dump(USERS, wfp)
+            json.dump(USERS, wfp)
         return newUser, 201
+    else:
+    	return {"error": "Request must be JSON"}, 415
+
+@API.route("/login", methods=['POST'])
+def login():
+    if request.is_json:
+        newUser = request.get_json()
+        if newUser['username'] == None:
+            return {"error": "username not found"}, 400
+        state = isUsernameAlreadyExist(newUser['username'])
+        if not state[0]:
+            return {"error": "username not exists"}, 400
+        return state[1], 201
     else:
     	return {"error": "Request must be JSON"}, 415
 
@@ -54,7 +73,7 @@ def create():
         newPost["reply"] = []
         POSTS.append(newPost)
         with open(POST_FILE, 'w') as wfp:
-        	json.dump(POSTS, wfp)
+            json.dump(POSTS, wfp)
         return newPost, 201
     else:
     	return {"error": "Request must be JSON"}, 415
@@ -91,11 +110,39 @@ def reply():
         newReply["id"] = find_next_reply_id(postId)
         post['reply'].append(newReply)
         with open(POST_FILE, 'w') as wfp:
-        	json.dump(POSTS, wfp)
+            json.dump(POSTS, wfp)
         return newReply, 201
     else:
     	return {"error": "Request must be JSON"}, 415
 
+@API.route("/discussion", methods=['GET','POST'])
+def discussion():
+    postId = request.args.get('postId')
+    if postId == None:
+        return {"error": "paramas postId not found"}, 400
+    postId = int(postId)
+    for p in POSTS:
+        if p['id'] == postId:
+            return jsonify(p)
+    return {"error": "postId is unavailable"}, 404
+
+@API.route("/delete", methods=['DELETE','POST'])
+def delete():
+    body = request.get_json()
+    if body['type'] == None or body['postId'] == None:
+        return {"error": "paramas not found"}, 400
+    if body['type'] == 'post':
+        post = find_topic_by_id(int(body['postId']))
+        if len(post['reply']) > 0:
+            return {"error": "post has reply"}, 400
+        POSTS.remove(post)
+        with open(POST_FILE, 'w') as wfp:
+            json.dump(POSTS, wfp)
+    elif body['type'] == 'reply':
+        post = find_topic_by_id(int(body['postId']))
+        POSTS.remove(post)
+        with open(POST_FILE, 'w') as wfp:
+            json.dump(POSTS, wfp)
 '''
     paramUsername = request.args.get('username')
     print(paramUsername)
@@ -158,10 +205,8 @@ def update_companies():
 
 with open(USER_FILE, encoding='utf-8') as fp:
 	USERS = json.load(fp)
-print(USERS)
 
 with open(POST_FILE, encoding='utf-8') as fp:
 	POSTS = json.load(fp)
-print(POSTS)
 	
 API.run(host='127.0.0.1', port=PORT, debug=True)
