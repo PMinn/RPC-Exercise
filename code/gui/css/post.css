@@ -1,0 +1,50 @@
+#title .ce-toolbar {
+    display: none !important;
+}
+
+.ce-paragraph {
+    cursor: text;
+}
+
+.main,
+#reply>div {
+    padding: 30px;
+}
+
+.editor-group {
+    border: 1px hsl(210, 14%, 20%) solid;
+    width: calc(100% - 60px);
+    margin: 30px auto;
+    padding: 20px;
+    border-radius: 0.375rem;
+    display: none;
+}
+
+#editor .codex-editor__redactor,
+.main .codex-editor__redactor,
+#reply .codex-editor__redactor {
+    padding-bottom: 5px !important;
+}
+
+.create-outer {
+    margin-top: 20px;
+    display: flex;
+    justify-content: flex-end;
+}
+
+#reply {
+    background-color: #0b59ad18;
+}
+
+.username {
+    font-weight: 900;
+}
+
+hr {
+    margin-bottom: 0;
+}
+
+hr:not(:last-child):not(:first-child) {
+    width: calc(100% - 60px);
+    margin: 0 auto;
+}

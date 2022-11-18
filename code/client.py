@@ -15,6 +15,17 @@ URI = f'http://{hostname}:{PORT}'
 isLogin = False
 loginedUsername = ""
 
+lastViewPost = None
+
+@eel.expose
+def init():
+    return {"isLogin":isLogin,"loginedUsername":loginedUsername,"lastViewPost":lastViewPost}
+
+@eel.expose
+def setLastViewPost(postId):
+	global lastViewPost
+	lastViewPost = postId
+
 @eel.expose
 def register(username):
 	global isLogin
@@ -79,10 +90,6 @@ def delete(json):
     print(response.headers)
     print(response.text)
     return {"code":response.status_code,"text":response.text}
-
-@eel.expose
-def getLoginState():
-    return {"isLogin":isLogin,"loginedUsername":loginedUsername}
 
 '''
 	if(sys.argv[3] == 'all'):

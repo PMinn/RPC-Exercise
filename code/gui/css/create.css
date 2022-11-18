@@ -1,0 +1,12 @@
+body {
+    padding: 20px;
+    background-color: #eff1f3;
+}
+
+#title .ce-toolbar {
+    display: none !important;
+}
+
+.ce-paragraph {
+    cursor: text;
+}

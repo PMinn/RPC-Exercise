@@ -1,0 +1,15 @@
+body {
+    padding: 20px;
+    background-color: #eff1f3;
+}
+
+.form {
+    position: relative;
+    height: 100%;
+}
+
+button {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+}

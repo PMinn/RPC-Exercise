@@ -100,11 +100,21 @@
                         <span class="badge rounded-pill">${subject.numOfReply}</span>
                     `;
                 listGroup.appendChild(button);
+
+                button.addEventListener('click', () => {
+                    post_to(subject.id);
+                });
             })
         }
 
         function post_init() {
             postFrame.src = `./post.html?id=${subjects[0].id}`;
+            eel.setLastViewPost(subjects[0].id);
+        }
+
+        function post_to(id) {
+            postFrame.src = `./post.html?id=${id}`;
+            eel.setLastViewPost(id);
         }
 
         function createFrameClear() {
@@ -172,7 +182,6 @@
             eel.login(username)()
                 .then(response => {
                     if (response.code >= 200 && response.code <= 299) {
-                        // console.log(JSON.parse(response.text))
                         isLogin = true;
                         loginedUsername = username;
                         document.getElementById("loginedUsername").innerText = username;
@@ -180,6 +189,7 @@
                         document.getElementById("register_btn").remove();
                         document.getElementById("login_btn").remove();
                         document.getElementById('create_btn').style.display = 'block';
+                        postFrame.contentWindow.location.reload();
                     } else return Promise.reject(JSON.parse(response.text).error);
                 })
                 .catch(error => {
@@ -191,10 +201,9 @@
         getSubjects()
             .then(() => {
                 render_subject();
-                post_init();
             })
 
-        eel.getLoginState()()
+        eel.init()()
             .then(response => {
                 console.log(response)
                 if (response.isLogin) {
@@ -204,6 +213,12 @@
                     document.getElementById("register_btn").remove();
                     document.getElementById("login_btn").remove();
                     document.getElementById('create_btn').style.display = 'block';
+                    postFrame.contentWindow.location.reload();
+                }
+                if (response.lastViewPost) {
+                    post_to(response.lastViewPost);
+                } else {
+                    post_init();
                 }
             })
     </script>
