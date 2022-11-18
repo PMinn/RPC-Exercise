@@ -2,6 +2,7 @@
 #  D1014636 潘子珉                                      									
 ####################################################
 from flask import Flask, json, request, jsonify
+import time
 
 PORT = 5050
 POST_FILE = 'posts.json'
@@ -33,6 +34,12 @@ def find_topic_by_id(postId):
     for post in POSTS:
         if post['id'] == postId:
             return post
+    return None
+
+def find_reply_by_id(post, replyId):
+    for reply in post['reply']:
+        if reply['id'] == replyId:
+            return reply
     return None
 
 @API.route("/register", methods=['POST'])
@@ -71,6 +78,7 @@ def create():
             return {"error": "paramas not found"}, 400
         newPost["id"] = find_next_topic_id()
         newPost["reply"] = []
+        newPost["time"] = time.time()
         POSTS.append(newPost)
         with open(POST_FILE, 'w') as wfp:
             json.dump(POSTS, wfp)
@@ -108,6 +116,7 @@ def reply():
         if newReply['owneUsername'] == None or newReply['content'] == None:
             return {"error": "paramas not found"}, 400
         newReply["id"] = find_next_reply_id(postId)
+        newReply["time"] = time.time()
         post['reply'].append(newReply)
         with open(POST_FILE, 'w') as wfp:
             json.dump(POSTS, wfp)
@@ -129,20 +138,28 @@ def discussion():
 @API.route("/delete", methods=['DELETE','POST'])
 def delete():
     body = request.get_json()
-    if body['type'] == None or body['postId'] == None:
+    if body['type'] == None or body['postId'] == None or body['loginedUsername'] == None:
         return {"error": "paramas not found"}, 400
     if body['type'] == 'post':
         post = find_topic_by_id(int(body['postId']))
+        if post['owneUsername'] != body['loginedUsername']:
+            return {"error": "you can't delete not yours post"}, 400
         if len(post['reply']) > 0:
             return {"error": "post has reply"}, 400
         POSTS.remove(post)
         with open(POST_FILE, 'w') as wfp:
             json.dump(POSTS, wfp)
+        return {} ,200
     elif body['type'] == 'reply':
         post = find_topic_by_id(int(body['postId']))
-        POSTS.remove(post)
+        reply = find_reply_by_id(post, int(body['replyId']))
+        if reply['owneUsername'] != body['loginedUsername']:
+            return {"error": "you can't delete not yours reply"}, 400
+        post['reply'].remove(reply)
         with open(POST_FILE, 'w') as wfp:
             json.dump(POSTS, wfp)
+        return {} ,200
+    return {"error": "type must be reply or post"}, 400
 '''
     paramUsername = request.args.get('username')
     print(paramUsername)

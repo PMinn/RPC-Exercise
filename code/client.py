@@ -85,6 +85,7 @@ def discussion(postId):
 
 @eel.expose
 def delete(json):
+    json['loginedUsername'] = loginedUsername
     response = requests.delete(URI+'/delete', json = json)
     print(response.status_code)
     print(response.headers)

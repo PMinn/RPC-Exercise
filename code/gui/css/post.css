@@ -6,7 +6,7 @@
     cursor: text;
 }
 
-.main,
+#main,
 #reply>div {
     padding: 30px;
 }
@@ -21,7 +21,7 @@
 }
 
 #editor .codex-editor__redactor,
-.main .codex-editor__redactor,
+#main .codex-editor__redactor,
 #reply .codex-editor__redactor {
     padding-bottom: 5px !important;
 }
@@ -47,4 +47,20 @@ hr {
 hr:not(:last-child):not(:first-child) {
     width: calc(100% - 60px);
     margin: 0 auto;
+}
+
+.time,
+.align-right {
+    text-align: end;
+}
+
+.delete-btn {
+    width: 30px;
+    opacity: 0.5;
+    transition: opacity 0.3s;
+    cursor: pointer;
+}
+
+.delete-btn:hover {
+    opacity: 1;
 }
