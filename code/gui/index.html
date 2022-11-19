@@ -23,18 +23,15 @@
     <div class="page">
         <div id="left">
             <div class="list-group list-group-theme list-group-flush">
-                <!-- <button
-                    class="list-group-item list-group-item-theme list-group-item-action d-flex justify-content-between align-items-start">
-                    <div class="fw-bold">討論1</div>
-                    <span class="badge rounded-pill">1</span>
-                </button>
-                <button
-                    class="list-group-item list-group-item-theme list-group-item-action d-flex justify-content-between align-items-start">
-                    <div class="fw-bold">討論2</div>
-                    <span class="badge rounded-pill">1</span>
-                </button> -->
             </div>
             <div class="btn-outer">
+                <button type="button" class="btn btn-secondary" id="reload_btn" onclick="reload()">
+                    <svg width="23" height="23" viewBox="0 0 36 37" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path
+                            d="M34.3079 14.2815L31.1913 5.53766C30.7663 4.42733 29.7746 3.45579 28.4996 3.317C27.2247 3.17821 25.9497 3.73338 25.2413 4.70492L24.6747 5.39887C22.6914 4.42733 20.4247 3.87217 18.0165 3.87217C9.65824 4.01096 3 10.5341 3 18.584C3 26.6339 9.65824 33.2959 18.0165 33.2959C24.6747 33.2959 30.6246 28.8546 32.4662 22.609C32.6079 21.915 32.1829 21.0823 31.4746 20.9435C30.7663 20.8047 29.9163 21.2211 29.7746 21.915C28.358 27.0503 23.5414 30.5201 18.0165 30.5201C11.3582 30.5201 5.83329 25.246 5.83329 18.584C5.83329 12.0608 11.3582 6.64799 18.0165 6.64799C20.2831 6.64799 22.4081 7.20316 24.3914 8.31349C24.958 8.72986 25.808 8.59107 26.233 7.89711L27.508 6.09283C27.6496 6.09283 27.933 6.09283 27.933 6.09283C28.0746 6.09283 28.358 6.23162 28.358 6.5092L31.4746 15.253C31.6163 15.5306 31.4746 15.8082 31.1913 15.947H31.0496L21.5581 16.0858C21.2747 16.0858 21.1331 15.947 21.1331 15.8082C21.1331 15.6694 20.9914 15.5306 21.1331 15.253L22.6914 13.0324C22.833 12.7548 22.9747 12.3384 22.833 11.9221C22.6914 11.5057 22.5497 11.2281 22.1247 10.9505C20.8497 10.2566 19.4331 9.97898 18.0165 9.97898C13.1999 9.97898 9.23324 13.8651 9.23324 18.584C9.23324 23.3029 13.1999 27.1891 18.0165 27.1891C21.1331 27.1891 24.108 25.5236 25.6663 22.8866C26.0913 22.1926 25.808 21.3599 25.0997 20.9435C24.3914 20.5271 23.5414 20.8047 23.1164 21.4986C21.9831 23.3029 20.1414 24.4133 17.8748 24.4133C14.6165 24.4133 11.9249 21.7762 11.9249 18.584C11.9249 15.3918 14.6165 12.7548 17.8748 12.7548C18.2998 12.7548 18.7248 12.7548 19.1498 12.8936L18.7248 13.5876C18.0165 14.5591 17.8748 15.947 18.4414 17.0573C19.0081 18.1677 20.2831 18.8616 21.4164 18.8616L30.9079 18.7228C31.4746 18.7228 32.0412 18.584 32.4662 18.3065C34.1662 17.6125 34.8745 15.947 34.3079 14.2815Z"
+                            fill="white" />
+                    </svg>
+                </button>
                 <button type="button" class="btn btn-primary" onclick="open_fixedPage('#createDiv')"
                     id="create_btn">新增討論主題</button>
             </div>
@@ -60,6 +57,32 @@
             <iframe src="./login.html" frameborder="0" id="loginFrame"></iframe>
             <div class="fixed-page-btn-outer">
                 <button type="button" class="btn btn-secondary" onclick="close_fixedPage('#loginDiv')">取消</button>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="warn" tabindex="-1" aria-labelledby="warnModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="warnModalLabel">錯誤</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body"></div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="delete_check" tabindex="-1" aria-labelledby="warnModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="warnModalLabel">刪除</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary">刪除</button>
+                </div>
             </div>
         </div>
     </div>

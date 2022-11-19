@@ -9,6 +9,17 @@ var loginedUsername = "";
 
 var subjects = [];
 
+const warn = new bootstrap.Modal(document.getElementById('warn'), {
+    keyboard: false
+})
+const warn_body = document.querySelector("#warn .modal-body");
+
+var delete_check = new bootstrap.Modal(document.getElementById('delete_check'), {
+    keyboard: false
+})
+var delete_check_body = document.querySelector("#delete_check .modal-body");
+var delete_check_btn = document.querySelector("#delete_check .btn-primary");
+
 function left_init() {
     listGroup.innerHTML = '';
 }
@@ -59,13 +70,16 @@ function create() {
     createFrame.contentWindow.save()
         .then(savedata => {
             if (savedata[0].blocks.length > 0 && savedata[0].blocks.length > 0) {
-                console.log(savedata);//savedata[i].blocks
+                // console.log(savedata);//savedata[i].blocks
                 eel.create({
-                    "owneUsername": "789",
                     "topic": savedata[0].blocks,
                     "content": savedata[1].blocks
                 })()
-                    .then(reload)
+                    .then(response => {
+                        createFrameClear();
+                        reload();
+                        post_to(JSON.parse(response.text).id);
+                    })
             }
             close_fixedPage('#createDiv');
         });
@@ -98,12 +112,10 @@ function register(username) {
                 document.getElementById("register_btn").remove();
                 document.getElementById("login_btn").remove();
                 document.getElementById('create_btn').style.display = 'block';
+                postFrame.contentWindow.location.reload();
             } else return Promise.reject(JSON.parse(response.text).error);
         })
-        .catch(error => {
-            console.error(error)
-            alert(error)
-        })
+        .catch(warning)
 }
 
 function login(username) {
@@ -120,10 +132,7 @@ function login(username) {
                 postFrame.contentWindow.location.reload();
             } else return Promise.reject(JSON.parse(response.text).error);
         })
-        .catch(error => {
-            console.error(error)
-            alert(error)
-        })
+        .catch(warning)
 }
 
 getSubjects()
@@ -156,4 +165,9 @@ function reload() {
             render_subject();
         })
     postFrame.contentWindow.location.reload();
+}
+
+function warning(error) {
+    warn_body.innerText = error;
+    warn.show();
 }

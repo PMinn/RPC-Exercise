@@ -52,8 +52,15 @@ iframe {
     position: absolute;
     bottom: 3vh;
     left: 0;
-    display: flex;
-    justify-content: center;
+}
+
+.btn-outer>* {
+    margin-inline: auto;
+    margin: 10px auto 0 auto;
+}
+
+#reload_btn {
+    display: block;
 }
 
 .fixed-page {

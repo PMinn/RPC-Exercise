@@ -1,4 +1,5 @@
 const main = document.getElementById("main");
+const nameDOM = document.getElementById("name");
 const title = document.getElementById("title");
 const replyDOM = document.getElementById("reply");
 const create_btn = document.getElementById("create_btn");
@@ -8,8 +9,10 @@ if (location.search.startsWith('?id=')) {
     const id = parseInt(location.search.replace("?id=", ""));
     eel.discussion(id)()
         .then(response => {
+            if (response.code < 200 || response.code >= 300) return Promise.reject(response.text);
             response = JSON.parse(response.text);
             console.log(response);
+            nameDOM.innerText = response.owneUsername + ':';
             time.innerText = new Date(response.time * 1000).toLocaleString();
             const EDITOR_JS_TOOLS = {
                 embed: Embed,
@@ -27,7 +30,7 @@ if (location.search.startsWith('?id=')) {
                 underline: Underline
             };
 
-            var editorTitle = new EditorJS({
+            new EditorJS({
                 holder: "title",
                 tools: {
                     header: Header
@@ -39,8 +42,7 @@ if (location.search.startsWith('?id=')) {
                 data: { "blocks": response.topic }
             });
 
-
-            var editorBody = new EditorJS({
+            new EditorJS({
                 holder: "content",
                 tools: EDITOR_JS_TOOLS,
                 readOnly: true,
@@ -49,7 +51,6 @@ if (location.search.startsWith('?id=')) {
 
             response.reply.forEach(reply => {
                 console.log(reply)
-
                 var outer = document.createElement("div");
                 var name = document.createElement("div");
                 var time = document.createElement("div");
@@ -101,7 +102,6 @@ if (location.search.startsWith('?id=')) {
                 }
             }
 
-
             create_btn.addEventListener('click', () => {
                 editorEditor.save()
                     .then(savedata => {
@@ -111,6 +111,9 @@ if (location.search.startsWith('?id=')) {
                             });
                     })
             })
+        })
+        .catch(error => {
+            window.parent.post_init();
         })
 
     function create_delete(option) {
@@ -122,9 +125,14 @@ if (location.search.startsWith('?id=')) {
 }
 
 function delete_postOrReply(option) {
-    option = option.replaceAll("'", "\"")
-    eel.delete(JSON.parse(option))()
-        .then(response => {
-            window.parent.reload();
-        });
+    option = JSON.parse(option.replaceAll("'", "\""));
+    window.parent.delete_check_body.innerText = `確定要刪除${option.type == 'post' ? '討論' : '回應'}嗎?`;
+    window.parent.delete_check.show();
+    window.parent.delete_check_btn.onclick = () => {
+        eel.delete(option)()
+            .then(response => {
+                window.parent.delete_check.hide();
+                window.parent.reload();
+            });
+    }
 }
